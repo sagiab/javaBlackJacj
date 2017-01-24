@@ -141,11 +141,17 @@ public class AppWindow extends JFrame
         tenChip.addActionListener(this);
         twentyFiveChip.addActionListener(this);
         hundredChip.addActionListener(this);
-        		
+
         gamePanel = new GamePanel();
         gamePanel.setBackground(defaultTableColour);
 		add(gamePanel);
-        
+
+
+
+
+
+
+
         setVisible(true);
     }
 

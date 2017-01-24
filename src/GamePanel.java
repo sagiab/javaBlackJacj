@@ -8,12 +8,15 @@ import java.io.*;
 
 import Players.*;
 import Cards.*;
+import StatisticTools.StatisticObject;
 
 public class GamePanel extends JPanel implements ActionListener
 {
+    private int GameCounts = 0;
+
     private Dealer dealer;
     private Player player;
-    
+
     private GameTable table;
     
     private JButton newGameButton = new JButton("Deal");
@@ -31,6 +34,8 @@ public class GamePanel extends JPanel implements ActionListener
     private JLabel playerWallet = new JLabel("$999.99");
     private JLabel cardsLeft = new JLabel("Cards left...");
     private JLabel dealerSays = new JLabel("Dealer says...");
+    private JLabel jlPlayerTip;
+    private JLabel jlPlayerCount;
     
     public GamePanel()
     {
@@ -65,7 +70,30 @@ public class GamePanel extends JPanel implements ActionListener
         bottomItems.add(betPanel);
         bottomItems.add(optionsPanel);
         add(bottomItems, BorderLayout.SOUTH);
-        
+
+        //Tip
+        JPanel jpPlayerRight = new JPanel(new GridBagLayout());
+        GridBagConstraints gbcPlayer = new GridBagConstraints();
+        JLabel jlTipString = new JLabel("Tip");
+        jlPlayerTip = new JLabel("Tip");
+
+        gbcPlayer.gridy = 0;
+        jpPlayerRight.add(jlTipString, gbcPlayer);
+        gbcPlayer.gridy = 1;
+        jpPlayerRight.add(jlPlayerTip, gbcPlayer);
+        add(jpPlayerRight, BorderLayout.NORTH);
+
+        //count
+        JPanel jpPlayerCount = new JPanel(new GridBagLayout());
+        JLabel jlCountString = new JLabel("                  Games Counter");
+        jlPlayerCount = new JLabel("0");
+
+        gbcPlayer.gridy = 0;
+        jpPlayerRight.add(jlCountString, gbcPlayer);
+        gbcPlayer.gridy = 1;
+        jpPlayerRight.add(jlPlayerCount, gbcPlayer);
+        add(jpPlayerRight, BorderLayout.NORTH);
+
         // opaque stuff
         //this.setBackground(new Color(6, 120, 0)); // now done in AppWindow.java
         betPanel.setOpaque(false);
@@ -99,7 +127,7 @@ public class GamePanel extends JPanel implements ActionListener
 		
 		dealer = new Dealer();
         player = new Player("James Bond", 32, "Male");
-        player.setWallet(100.00);
+        player.setWallet(10000.00);
 		
         updateValues();
     }
@@ -110,19 +138,71 @@ public class GamePanel extends JPanel implements ActionListener
         
         if (act.equals("Deal"))
         {
-            newGame();
+            if(GameCounts == 0){
+                //start
+            }
+            jlPlayerCount.setText(String .valueOf(GameCounts++));
+            if(GameCounts == 11){
+                //ask rationality measure for prev round
+
+                //start
+            }
+            if(GameCounts == 21){
+                //ask rationality measure for prev round
+
+                //start
+            }
+            if(GameCounts == 31){
+                // Thanks its over - send results to file
+
+            }else{
+                if(GameCounts <= 10){
+                    // player on his own
+                    jlPlayerTip.setText("Do your best!");
+                } else if (GameCounts <= 20){
+                    //ask results (what to do)
+
+                    jlPlayerTip.setText("Do your best!");
+                } else {
+                    //ask results (what to do)
+
+                    jlPlayerTip.setText("Do your best!");
+                }
+                newGame();
+            }
         }
         else if (act.equals("Hit"))
         {
-            hit();
+            StatisticObject statisticObject = hit();
+            if(GameCounts > 10 && GameCounts <= 20){
+                //Pure Tip
+                jlPlayerTip.setText("Do your best!");
+            } else if (GameCounts > 20){
+                //Pure Statistic
+                jlPlayerTip.setText("Do your best!");
+            }
         }
         else if (act.equals("Double"))
         {
-            playDouble();
+            StatisticObject statisticObject = playDouble();
+            if(GameCounts > 10 && GameCounts <= 20){
+                //Pure Tip
+                jlPlayerTip.setText("Do your best!");
+            } else if (GameCounts > 20){
+                //Pure Statistic
+                jlPlayerTip.setText("Do your best!");
+            }
         }
         else if (act.equals("Stand"))
         {
-            stand();
+            StatisticObject statisticObject = stand();
+            if(GameCounts > 10 && GameCounts <= 20){
+                //Pure Tip
+                jlPlayerTip.setText("Do your best!");
+            } else if (GameCounts > 20){
+                //Pure Statistic
+                jlPlayerTip.setText("Do your best!");
+            }
         }
         else if (act.equals("1") || act.equals("5") || act.equals("10") || act.equals("25") || act.equals("100"))
         {
@@ -139,22 +219,23 @@ public class GamePanel extends JPanel implements ActionListener
     
     public void newGame()
     {
+
         dealer.deal(player);
     }
     
-    public void hit()
+    public StatisticObject hit()
     {
-        dealer.hit(player);
+        return  dealer.hit(player);
     }
-    
-    public void playDouble()
+
+    public StatisticObject playDouble()
     {
-        dealer.playDouble(player);
+        return dealer.playDouble(player);
     }
-    
-    public void stand()
+
+    public StatisticObject stand()
     {
-        dealer.stand(player);
+        return dealer.stand(player);
     }
     
     public void increaseBet(int amount)
@@ -285,7 +366,7 @@ public class GamePanel extends JPanel implements ActionListener
         
         if (response == JOptionPane.YES_OPTION)
         {
-            player.setWallet(100.00);
+            player.setWallet(10000.00);
             updateValues();
         }
     }
@@ -367,4 +448,6 @@ public class GamePanel extends JPanel implements ActionListener
         
         player = playerDetails.getPlayer();
 	}
+    public void setPlayerTip(String in) {jlPlayerTip.setText(in);}
+
 }

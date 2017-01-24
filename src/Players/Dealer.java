@@ -1,6 +1,10 @@
 package Players;
 
 import Cards.*;
+import StatisticTools.StatisticObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class representing the Dealer of a Blackjack game.
@@ -146,8 +150,12 @@ public class Dealer extends BlackjackPlayer
      *
      * @param player The player requesting another card.
      */
-    public void hit(Player player)
+    public StatisticObject hit(Player player)
     {
+        String s = "HIT";
+        StatisticObject statisticObject = DateToStatistics(player, s);
+
+
         say(player.getName() + " hits.");
         player.hand.add(deck.deal());
         
@@ -159,16 +167,41 @@ public class Dealer extends BlackjackPlayer
             player.loses();
             gameOver = true;
         }
+        return statisticObject;
     }
-    
+
+    private StatisticObject DateToStatistics(Player player, String moveType) {
+        Deck duplicatedDeck = new Deck();
+        duplicatedDeck = deck;
+        DealerCardHand dealerCardHand = this.getHand();
+        Card dealerOpenedCard =  dealerCardHand.get(1);
+        int dealerCardToOfek = dealerOpenedCard.getValue();
+        Card dealerClosedCard =  dealerCardHand.get(0);
+        dealerOpenedCard.getFace().getValue();
+        int[] ofekDeck = convertSagiDackToOfekDack(duplicatedDeck, dealerClosedCard);
+        PlayerCardHand playerCardHand = player.getHand();
+        List<Integer> playerHand = convertToOfekHand(playerCardHand);
+
+        StatisticObject s = new StatisticObject();
+        s.setDealerOpenCard(dealerCardToOfek);
+        s.setDec(ofekDeck);
+        s.setPlayerHand(playerHand);
+        s.setPlayerMove(moveType);
+        return s;
+    }
+
+
     /**
      * Player would like to place a bet up to double of his original and
      * have the dealer give him one more card.
      *
      * @param player The player requesting to play double.
      */
-    public void playDouble(Player player)
+    public StatisticObject playDouble(Player player)
     {
+        String s = "DOUBLE";
+        StatisticObject statisticObject = DateToStatistics(player, s);
+
         if (player.doubleBet() && playerCanDouble)
         {
             player.hand.add(deck.deal());
@@ -189,6 +222,7 @@ public class Dealer extends BlackjackPlayer
         {
             say(player.getName() + ", you can't double. Not enough money.");
         }
+        return statisticObject;
     }
     
     /**
@@ -196,10 +230,14 @@ public class Dealer extends BlackjackPlayer
      *
      * @param player The player who wishes to stand.
      */
-    public void stand(Player player)
+    public StatisticObject stand(Player player)
     {
+        String s = "STAND";
+        StatisticObject statisticObject = DateToStatistics(player, s);
+
         say(player.getName() + " stands. " + this.getName() + " turn.");
         go(player);
+        return statisticObject;
     }
     
     /**
@@ -292,4 +330,25 @@ public class Dealer extends BlackjackPlayer
     {
         return hand;
     }
+
+    private int[] convertSagiDackToOfekDack(Deck deck, Card closeCared){
+        int deckSize = deck.size();
+        int[] res = new int[deckSize];
+        while(!deck.isEmpty()){
+            Card c = deck.pop();
+            res[c.getValue()]++;
+        }
+        res[closeCared.getValue()]++;
+
+        return res;
+    }
+
+    private List<Integer> convertToOfekHand(PlayerCardHand playerCardHand) {
+        List<Integer> res = new ArrayList<>();
+        for(Card c : playerCardHand){
+            res.add(c.getValue());
+        }
+        return  res;
+    }
+
 }
